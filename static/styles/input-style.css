@@ -116,17 +116,11 @@ p{
 	-webkit-transition: all 0.1s;
 }
 
-.action-button
+button
 {
-	position: relative;
-	padding: 10px 40px;
-margin: 0px 10px 10px 0px;
-float: left;
-	border-radius: 8px;
-	font-family: 700 1em 'Raleway';
-	font-size: 25px;
-	color: #FFF;
-	text-decoration: none;
+	width:150px;
+  font-size: 22px;
+  padding:10px
 }
 
 .blue

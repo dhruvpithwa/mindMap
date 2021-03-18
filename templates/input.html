@@ -4,8 +4,20 @@
     <meta charset="utf-8">
     <title>Input Page</title>
     <!-- <link rel="stylesheet" href="../static/styles/input-style.css"> -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/input-style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/input.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.1/css/font-awesome.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <style>
+      body{
+        width: 100%;
+        height: 100%;
+        background-image: url('../static/images/background-image2.jpg');
+        background-repeat: no-repeat;
+        background-position: right 0 top 0;
+      }
+    </style>
+
     <script type="text/javascript">
 
     function makePopUpBox(passed_text){
@@ -56,7 +68,7 @@
     function makePostRequest(text){
       var form = document.createElement("form");
       form.setAttribute("method", "POST");
-      form.setAttribute("action", "/get_cytoscape_json_for_text")
+      form.setAttribute("action", "/page2")
 
       var hiddenField = document.createElement("input");
       hiddenField.setAttribute("type", "hidden");
@@ -96,30 +108,81 @@
   </head>
 
   <body>
-    <div class="mega-container">
-      <header>
-        <h1>Semantic Tree</h1>
-        <p>Add text for Concept Map generation using the text box below. You can add multiple peices of text by using <b>Add Text</b> button.
-        All pieces of text will appear in the dialogue box on the left side of the screen. You can choose to remove pieces by clicking on the
-        <b>'X'</b> icon on the clip-box.
-        Furthermore, you can also drag-and-drop ".txt" file onto the green region for adding text.
-      </p>
-      </header>
-      <div class="container">
-        <textarea id="input-text" name="input-text" rows="8" cols="80" ondragover="allow(event)" ondrop="handleFileSelect(event)"></textarea>
-        <div id="clip-area">
-          <div class="popup" id="Orignal-clip-box">
-              <a class="close" onclick="closePopUp(this)">&times;</a>
-              <div class="content">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </div>
-          </div>
-        </div>
-        <button type="button" id="add-text" class="action-button animate red" name="addtext" onclick="makePopUpBox()">Add Text</button>
-        <button type="button" id="clear-text" class="action-button animate blue" name="cleartext" onclick="clearClipArea()">Clear</button>
-        <button type="button" id="generate" class="action-button animate green" name="generate" onclick="generate()">Generate</button>
-      </div>
-    </div>
-  </body>
+    
+    <br>
+    
+      <div style="margin:20px;width: 800px;">
+      
+          <h1>Mind Map</h1>
 
+          <br><br>
+          
+          <textarea style="resize:none" id="input-text" name="input-text" rows="12" cols="72" ondragover="allow(event)" ondrop="handleFileSelect(event)"></textarea>
+          
+          <br><br>
+
+          <div> 
+            <button type = "button"  id="clear-text" class="action-button animate red" name="cleartext" onclick="clearClipArea()">Clear</button>
+            <button type = "button"  id="generate" class="action-button animate blue" name="generate" onclick="generate()">Generate</button>  
+            <button type = "button"  id="generate" class="action-button animate green" onclick="startConverting();">Speak</button>
+            <button type = "button"  id="generate" class="action-button animate yellow" onclick="stopConverting();">Stop</button>
+        </div>
+
+          <br><br>
+          <br><br>
+
+          <h2 style="text-align: justify;">
+            Mind mapping is a technique based on memory and creativity and comprehension and understanding, so when the student or a child uses the mind map, they are using their brain in the way their brain was designed to be used, and so the mind helps them in all learning and cognitive skills. It simply helps them in what the brain does naturally.
+          </h2>
+      
+      </div>
+  
+  </body>
+  <script>
+        
+        var r = document.getElementById('input-text');
+        var speechRecognizer = new webkitSpeechRecognition();
+          
+        function startConverting () {
+            
+              if('webkitSpeechRecognition' in window){
+
+                  speechRecognizer.continuous = true;
+                  speechRecognizer.interimResults = true;
+                  speechRecognizer.lang = 'en-IN';
+                  speechRecognizer.start();
+                  
+                  var finalTranscripts = '';
+                  
+                  speechRecognizer.onresult = function(event){
+                    
+                    var interimTranscripts = '';
+                    for(var i = event.resultIndex; i < event.results.length; i++)
+                    {
+                        var transcript = event.results[i][0].transcript;
+                        transcript.replace("\n", "<br>");
+                      
+                        if(event.results[i].isFinal){
+                          finalTranscripts += transcript;
+                        }
+                        else{
+                          interimTranscripts += transcript;
+                        }
+                    }
+                    
+                    r.value = finalTranscripts + interimTranscripts ;
+                  
+                  };
+                  speechRecognizer.onerror = function (event) {};
+              }
+              else{
+                  r.innerHTML = 'No browser support. Please upgrade your browser';
+              }
+          }
+          function stopConverting()
+          {
+            speechRecognizer.stop();
+          }
+
+  </script>
 </html>

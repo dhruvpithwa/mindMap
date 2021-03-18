@@ -8,7 +8,7 @@ import numpy as np
 connection = namedtuple('connection', 'node weight')
 Index = namedtuple('Index', 'pid, sid, wid')
 
-nlp = spacy.load('en')
+nlp = spacy.load("en_core_web_sm")
 # nlp = spacy.load('en_core_web_lg')
 # nlp = spacy.load('en_vectors_web_lg', vocab=nlp.vocab)
 # spacy.load('/tmp/en_wiki', vocab=nlp.vocab)  # used for the time being

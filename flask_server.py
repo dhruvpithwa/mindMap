@@ -11,10 +11,10 @@ input_text = None
 
 @app.route('/')
 def simple_page():
-    return "Please go to <a href='/input_page'> INPUT PAGE</a>"
+    return "Please go to <a href='/page1'> INPUT PAGE</a>"
 
 
-@app.route('/input_page')
+@app.route('/page1')
 def input_page():
     return render_template('input.html')
 
@@ -35,8 +35,8 @@ def wiki_test():
     # print(ex)
 
 
-@app.route('/get_cytoscape_json_for_text', methods=['POST', 'GET'])
-def get_cytoscape_json_for_text():
+@app.route('/page2', methods=['POST', 'GET'])
+def page2():
     global json_data, input_text
     if request.method == "POST":
         input_text = request.form["input-text"]
