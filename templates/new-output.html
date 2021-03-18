@@ -1,13 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Semantic Tree - Concept Map</title>
+	<title>Mind Map</title>
+
+  <style>
+    #navbar {
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    #navbar a {
+      float: left;
+      display: block;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-family: Helvetica;
+      font-size: 17px;
+    }
+
+    #navbar a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
+    #navbar a.active {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .content {
+      padding: 16px;
+    }
+
+    .sticky {
+      position: fixed;
+      top: 0;
+      width: 100%;
+    }
+
+    .sticky + .content {
+      padding-top: 60px;
+    }
+
+    #map-area *{
+        z-index: 0 !important;
+    }
+    </style>
+    
 
   <script
   src="http://code.jquery.com/jquery-3.3.1.js"
   integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
   crossorigin="anonymous"></script>
-	<script src="{{url_for('static', filename='js/jquery-2.1.1.min.js')}}"></script>
+	
+  <script src="{{url_for('static', filename='js/jquery-2.1.1.min.js')}}"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
 	<script type="text/javascript" src="{{url_for('static', filename='js/development.js')}}"></script>
 	<script src="{{url_for('static', filename='js/cytoscape.js')}}"></script>
@@ -15,92 +63,49 @@
 	<script src="{{url_for('static', filename='js/cytoscape-cxtmenu.js')}}"></script>
 	<script type="text/javascript" src="{{url_for('static', filename='js/variable_list.js')}}"></script>
 	<script type="text/javascript" src="{{url_for('static', filename='js/concept_map_rendering_functions.js')}}"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
 
 
 	<link href="https://fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <!-- <link rel="stylesheet" type="text/css" href="style.css"> -->
-	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/new-output.css')}}">
+
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/new-output.css')}}"> 
 	<link rel="shortcut icon" href="/">
 
 
 </head>
 <body>
-	<div class="grid-container">
-		<!-- <div id="viewport"></div> -->
+	
+  <div id="navbar">
+    <a class= "active" href="#">Mind Map</a>
+    <a href="#" onclick="show_full_graph(); return false;">Show Full Graph</a>
+    <a href="#" onclick="reset(); return false;">Reset</a>
+    <a href="#" onclick="downloadimage(); return false;">Download Map</a>
+  </div>
 
-		<div id="config-area">
-      <div class="hamburger" id="nav-icon3">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <div id='profile-icon'><i class="fa fa-sitemap"></i></div>
-      <div id="profile-title">Semantic Tree</div>
-
-      <!-- <div id="button-area"></div> -->
-      <div class="btn" id='button-reset'><button onclick="reset()"><i class="fa fa-refresh"></i> Reset</button></div>
-      <div class="btn" id="button-og-text"><button onclick="show_full_graph()"><i class="fa fa-file-text-o"></i>Show Full Graph</button></div>
-
-      <!-- Control Area -->
-      <div id="slider-area">
-        <div class="config-slider">
-          <p>Threshhold</p>
-          <input type="range" min="0", max="1", step="0.01" value="0.75", id="threshhold">
-          <span id="threshhold-output">0</span>
-        </div>
-        <div class="config-slider">
-          <p>Maximum Connections</p>
-          <input type="range" min="2", max="15", value="5", id="maxConnections">
-          <span id="maxConnections-output">0</span>
-        </div>
-        <div class="btn">
-          <button onclick="changeParameters()" class="btn">Apply parameters</button>
-        </div>
-      </div>
-
-      <!-- <div id="back-area"></div> -->
-      <div class="btn" id="back-button-back"><button onclick="location.href='/input_page'"><i class="fa fa-long-arrow-left"></i> Back</button></div>
-    </div>
-	  <div id="pop-up">
-      <div id="title"><b>hello</b></div>
-      <div id="meaning">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Labore inventore, modi nulla dolor architecto quos veritatis cumque magni ipsam. Sequi?
-      </div>
-			<span>Origin Text</span>
-			<label class="switch">
-				<input type="checkbox"/>
-				<div class="wrapper">
-					<div class="dwrapper">
-						<span class="slider"></span>
-					</div>
-				</div>
-			</label>
-			<span class="unselected">Define</span>
-			<!-- <button id='b1' type="button" name="button" onclick='origin_text()'>Origin Text</button>
-      <button id='b2' type="button" name="button">Define</button> -->
-			<div class="btn" id="subtree">
-				<button id="subtree-btn">Get Subtree</button>
-			</div>
-			<a href="#" class="close" onclick='close_popup()'></a>
-		</div>
-		<div id="map-area"></div>
+  <div class="grid-container">
+    <div id="map-area"></div>
 	</div>
-	<script type="text/javascript">
-    $(document).ready(function(){
-      $('#nav-icon3').click(function(){
-    		$(this).toggleClass('open');
-        $("#config-area").toggleClass('close-config');
-    	});
-    });
-		$('#pop-up input[type=checkbox]').click(function(){
-			$('#pop-up span').toggleClass('unselected');
-			// $('#meaning').toggleClass('long-text');
-		});
+	
+  <script type="text/javascript">
 		var cy=create_core_obj(true);
 		LoadFile();
 		setLayout("cose-bilkent", cy);
+
+
+    function downloadimage() {
+        var container = document.getElementById("map-area"); // full page 
+        html2canvas(container, { allowTaint: true }).then(function (canvas) {
+
+            var link = document.createElement("a");
+            document.body.appendChild(link);
+            link.download = "html_image.jpg";
+            link.href = canvas.toDataURL();
+            link.target = '_blank';
+            link.click();
+        });
+    }
+
 	</script>
 </body>
 </html>
